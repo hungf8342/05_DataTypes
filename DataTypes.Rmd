@@ -1,0 +1,578 @@
+---
+title: "Data Types and Summaries"
+author: "Clemontina A Davenport, PhD"
+date: "June 18, 2021"
+output:
+  bookdown::word_document2: default
+---
+
+```{r setup, message=FALSE, warning=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, fig.width=5.5, fig.height=5.5)
+
+#############################################################################
+##                                                                         ##
+##  Author: tina.davenport@duke.edu                                        ##
+##  Program: DataTypes.rmd                                                 ##
+##  Purpose: This program creates the plots for the motivating example of  ##
+##           this module.                                                  ##
+##                                                                         ##
+##  Input files: .../NHANESsub.csv (static dataset of NHANES data)         ##
+##                                                                         ##
+##  Output files: DataTypes.docx                                           ##
+##                                                                         ##
+##  Change Log:                                                            ##
+##  06/18/2021 File created                                                ##
+##                                                                         ##
+#############################################################################
+
+library(tidyverse); library(lubridate); library(knitr); library(aod);
+library(xtable); library(psych); library(cowplot); library(GGally)
+options(knitr.kable.NA="")
+
+```
+
+
+
+# Introduction
+
+Welcome to the module “Data Types and Summaries”. In this module we will discuss different data types and exploring data using graphical and numerical summaries. At the end of the module, you will learn how to explore data of different types.
+
+After collecting data and before performing any type of inferential analyses, it’s extremely important to “know the data” that you have. Part of “knowing the data” means knowing the design of the study and how the measures were collected (MODULE 4) and having some clinical knowledge of the measures collected (See MODULE 3). Another part of “knowing the data” means being very familiar with the data values themselves. For example...What type of data is each measurement? How are missing values represented? What values are considered extreme or outliers, and what values are biologically impossible? How are the values of a measurement spread around some central number? How do the measurements relate to each other?
+
+These questions and more need to be explored before performing any type of analyses. In fact, the answers to these questions may change the analytic approach that was planned during study design. And that’s fine if it does! But exploring the data first is critical in ensuring that the planned analysis is appropriate.
+
+
+
+# Data Types
+
+We will motivate our discussion using the example in MODULE 3. The research question was “is there a link between hypertension and kidney function?” and we use systolic blood pressure as a proxy for hypertension, and eGFR as our primary outcome to represent kidney function. We also measure other variables of interest such as age, sex, and income. Table \@ref(tab:tbl-Data) displays the first 10 of 300 participants in the study.
+
+```{r tbl-Data, warning=FALSE, echo=FALSE}
+NHANES <- read.csv(file="NHANESdat.csv", header=TRUE, na.strings="",
+    stringsAsFactors=TRUE) %>%
+  select(SEQN, age, sex, income, Numpeople, SBP, ACR, eGFR) %>%
+  mutate(income=factor(income))
+  NHANES$ACRcorrect <- NHANES$ACR
+  NHANES$ACRcorrect[which(NHANES$ACRcorrect>21000)] <- NA  # set outlier to NA
+  NHANES$logACR <- log(NHANES$ACRcorrect)
+
+
+levels(NHANES$income) <- list(  # collapse income categories for ease
+    "$0 to $24,999"=as.character(c(1:5,13)),
+    "$25,000 to $54,999"=as.character(6:8),
+    "$55,000 to $99,999"=as.character(c(9,10,14)),
+    "$100,000 and Over"="15")  # set 12 to missing
+
+NHANES[1:10,] %>% select(-ACRcorrect, -logACR) %>%
+  kable(caption="Snapshot of NHANES Data")
+```
+
+When exploring new data, we should first identify the data type of each variable.The data type will ultimately play a significant role in what types of analyses, both exploratory and inferential are appropriate. There are two broad types of data: categorical and quantitative, and these can be broken into sub-types.
+
+- Categorical data are those that can be grouped into classes or categories, as the name implies. Categorical data can be binary, nominal, or continuous. 
+
+  - In our example, sex is a binary variable. It only takes two values, 0 or 1, and these values cover all possibilities. Generally, the dataset should come with a data dictionary or some documentation to explain what a value of 0 or 1 means, for example, 0=female sex and 1=male sex.
+  
+  - SEQN is the subject identifier and is a nominal categorical variable. Nominal variables have groups for which there is no natural ordering.
+  
+  - Income is an ordinal categorical variable, or one in which there is a natural ordering. the groups have a ranking in that "\$0 to \$24,999" < "\$25,000 to \$54,999"
+
+- The remaining variables are quantitative and there are two types, discrete and continuous.
+
+  - Discrete data are isolated or countable. There is no value between any two values. Number of people living in a household is an example of this type of variable. There can only be 0, 1, 2, ... people in a house. Theoretically discrete data can go to infinity.
+  
+  - Age, SBP, and eGFR are continuous quantitative data. Continuous data are uncountable, and theoretically, between any two given values there exists another value. Be careful though. There will be limits to measurement accuracy for continuous data. Though age is measured in whole numbers in our example, it is still a continuous variable and not discrete, because ages like 39.5 still make sense.
+
+Different variable types require difference analytic considerations, whether they are the primary outcome of the study, the primary exposure, or extraneous variables. Knowing the type of variables will have great impact on the analytic approach and the conclusions that will be drawn. A quantitative expert can help identify variable types and analytic approaches.
+
+
+
+# Graphical Summaries
+
+Once the data types are identified, plots are simple yet powerful tools to provide information about the data. You should plot every single variable you will use in your analyses, regardless of how it will be used. Even variables that will only appear in a descriptive table should be plotted to ensure that the numerical summaries (discussed a little later) given are appropriate.
+
+Histograms are a good starting point for getting to know individual quantitative variables. Attention should be drawn to overall pattern, shape, center, and spread, and to deviations and outliers from this pattern. In Figure \@ref(fig:fig-hist), ACR has an extremely large outlier at 21,000 mg/g. It is up to the researcher who has the clinical expertise to determine if this is an implausible value or and invalid one.
+
+```{r fig-hist, fig.cap="Histogram for Quantitative Data"}
+h1 <- NHANES %>%
+  ggplot(aes(x=age)) +
+  geom_histogram(aes(y=..density..), binwidth=5, color=1, fill="grey70") + 
+  #geom_density(size=1.5, col=4) +
+  #stat_function(fun=dnorm, args=list(mean=mean(NHANES$age),
+  #    sd=sd(NHANES$age)), color=2, size=1.5) +
+  xlab("Age") + ylab("Density") 
+  #theme(axis.title.x=element_text(size=14),
+  #    axis.title.y=element_text(size=14),
+  #    axis.text.x=element_text(size=14),
+  #    axis.text.y=element_text(size=14) )
+h2 <- NHANES %>%
+  ggplot(aes(x=SBP)) +
+  geom_histogram(aes(y=..density..), binwidth=6, color=1, fill="grey70") + 
+  xlab("SBP") + ylab("Density") 
+  #theme(axis.title.x=element_text(size=14),
+  #    axis.title.y=element_text(size=14),
+  #    axis.text.x=element_text(size=14),
+  #    axis.text.y=element_text(size=14) )
+h3 <- NHANES %>%
+  ggplot(aes(x=eGFR)) +
+  geom_histogram(aes(y=..density..), binwidth=10, color=1, fill="grey70") + 
+  xlab("eGFR") + ylab("Density") 
+  #theme(axis.title.x=element_text(size=14),
+  #    axis.title.y=element_text(size=14),
+  #    axis.text.x=element_text(size=14),
+  #    axis.text.y=element_text(size=14) )
+h4 <- NHANES %>%
+  ggplot(aes(x=ACR)) +
+  geom_histogram(aes(y=..density..), color=1, fill="grey70") + 
+  xlab("ACR") + ylab("Density") 
+  #theme(axis.title.x=element_text(size=14),
+  #    axis.title.y=element_text(size=14),
+  #    axis.text.x=element_text(size=14),
+  #    axis.text.y=element_text(size=14) )
+plot_grid(h1, h2, h3, h4)
+
+#par(mfrow=c(2,2))
+#hist(NHANES$age, xlab="Age", main="", cex.lab=1.2, cex.axis=1.2)
+#hist(NHANES$Numpeople, xlab="# People in Household", main="", cex.lab=1.2,
+#    cex.axis=1.2)
+#hist(NHANES$SBP, xlab="SBP", main="", cex.lab=1.2, cex.axis=1.2)
+#hist(NHANES$eGFR, xlab="eGFR", main="", cex.lab=1.2, cex.axis=1.2)
+
+rm(h1, h2, h3, h4)
+```
+
+Even when the outlier is removed, ACR is still very skewed. This will be an important consideration in analyses, such as the need to transform or categorized this variable.
+
+```{r fig-histACR, fig.cap="Histogram for Quantitative Data"}
+NHANES %>%
+  ggplot(aes(x=ACRcorrect)) +
+  geom_histogram(aes(y=..density..), color=1, fill="grey70") + 
+  xlab("ACR - outlier removed") + ylab("Density") 
+```
+
+Sometimes a log transformation can help with very skewed data.
+
+```{r fig-histlACR, fig.cap="Histogram for Quantitative Data"}
+NHANES %>%
+  ggplot(aes(x=logACR)) +
+  geom_histogram(aes(y=..density..), color=1, fill="grey70") + 
+  xlab("log(ACR) - outlier removed") + ylab("Density")
+```
+
+Boxplots are also useful for graphically displaying common summary statistics of data, the median, the 25th percentile, and the 75th percentile. The distance between the 25th and 75th percentile is called the interquartile range, and any data points outside of 1.5 times the interquartile range are plotted as outliers.
+
+```{r fig-boxplot, fig.cap="Boxplot for Quantitative Data"}
+NHANES %>% mutate(Grp=1) %>%
+  ggplot(aes(x=Grp, y=eGFR)) + 
+  geom_boxplot() +
+  xlab("") + ylab("eGFR") +
+  theme(axis.text.x=element_blank(),
+      axis.ticks.x = element_blank())
+#boxplot(NHANES$eGFR, cex.lab=1.2, cex.axis=1.2, lwd=2, cex=1.2,
+#    cex.main=1.5, ylab="eGFR", main="")
+```
+
+Just to be clear, though a point may be plotted as an outlier in a box plot does not necessarily mean it is an outlier in a clinical sense. Nor is it necessarily problematic for analyses. The clinical expert and the quantitative expert together can decide how extreme values should be handled.
+
+```{r fig-boxplotNH, fig.cap="Boxplot for NHANES Data"}
+h1 <- NHANES %>% mutate(Grp=1) %>%
+  ggplot(aes(x=Grp, y=age)) + 
+  geom_boxplot() +
+  xlab("") + ylab("Age") +
+  theme(axis.text.x=element_blank(),
+      axis.ticks.x = element_blank())
+h2 <- NHANES %>% mutate(Grp=1) %>%
+  ggplot(aes(x=Grp, y=SBP)) + 
+  geom_boxplot() +
+  xlab("") + ylab("SBP") +
+  theme(axis.text.x=element_blank(),
+      axis.ticks.x = element_blank())
+h3 <- NHANES %>% mutate(Grp=1) %>%
+  ggplot(aes(x=Grp, y=eGFR)) + 
+  geom_boxplot() +
+  xlab("") + ylab("eGFR") +
+  theme(axis.text.x=element_blank(),
+      axis.ticks.x = element_blank())
+h4 <- NHANES %>% mutate(Grp=1) %>%
+  ggplot(aes(x=Grp, y=logACR)) + 
+  geom_boxplot() +
+  xlab("") + ylab("log(ACR)") +
+  theme(axis.text.x=element_blank(),
+      axis.ticks.x = element_blank())
+
+plot_grid(h1, h2, h3, h4)
+
+rm(h1, h2, h3, h4)
+```
+
+Boxplots alone are not sufficient graphical summaries because they are limited by what characteristics can be displayed. Consider a boxplot of hypothetical data in Figure \@ref(fig:fig-boxbi).
+
+```{r fig-boxbi, fig.cap="Graphical Limitations of Boxplots"}
+set.seed(1)
+dat <- data.frame(Val=c(rnorm(1000, mean=0), rnorm(1000, mean=4.5)), Grp=1)
+dat %>%
+  ggplot(aes(x=Grp, y=Val)) + 
+  geom_boxplot() +
+  xlab("Box Plot of Bimodal Sample Data") + ylab("Data Values") +
+  theme(axis.text.x=element_blank(),
+      axis.ticks.x = element_blank())
+```
+
+The actual distribution of the data is given in Figure \@ref(fig:fig-histbi). The boxplot does not give any hints to the two peaks in the data.
+
+```{r fig-histbi, fig.cap="Graphical Limitations of Boxplots"}
+dat %>%
+  ggplot(aes(x=Val)) +
+  geom_histogram(aes(y=..density..), color=1, fill="grey70") + 
+  xlab("Data Values") + ylab("Density") +
+  geom_density(size=1.5, col=4, linetype=3)
+#hist(dat$Val, freq=FALSE, col="grey80", xlab="Data Values", cex.lab=1.2,
+#    cex.axis=1.2, cex.main=1.5, ylim=c(0,0.2),
+#    main="Histogram of Bimodal Sample Data")
+#  lines(density(dat$Val), lwd=3, col=4)
+#  box()
+```
+
+Violin plots give the same information as a boxplot, except the box is replaced with estimated density of the data.
+
+```{r fig-violin, fig.cap="Violin Plot for Quantitative Data"}
+dat %>%
+  ggplot(aes(x=Grp, y=Val)) + 
+  geom_violin() +
+  geom_boxplot(width=0.1) +
+  xlab("Bimodal Sample") + ylab("Data Values") +
+  theme(axis.text.x=element_blank(),
+      axis.ticks.x = element_blank())
+rm(dat)
+```
+
+Below are violin plots of the NHANES data stratified by sex.
+
+```{r fig-violinNH, fig.cap="Violin Plots for NHANES Data"}
+h1 <- NHANES %>% mutate(Sex=factor(ifelse(sex==1, "Male", "Female"))) %>%
+  ggplot(aes(x=Sex, y=age, color=Sex)) + 
+  geom_violin() +
+  geom_boxplot(width=0.1) +
+  xlab("Sex") + ylab("Age") 
+h2 <- NHANES %>% mutate(Sex=factor(ifelse(sex==1, "Male", "Female"))) %>%
+  ggplot(aes(x=Sex, y=SBP, color=Sex)) + 
+  geom_violin() +
+  geom_boxplot(width=0.1) +
+  xlab("Sex") + ylab("SBP") 
+h3 <- NHANES %>% mutate(Sex=factor(ifelse(sex==1, "Male", "Female"))) %>%
+  ggplot(aes(x=Sex, y=eGFR, color=Sex)) + 
+  geom_violin() +
+  geom_boxplot(width=0.1) +
+  xlab("Sex") + ylab("eGFR") 
+h4 <- NHANES %>% mutate(Sex=factor(ifelse(sex==1, "Male", "Female"))) %>%
+  ggplot(aes(x=Sex, y=logACR, color=Sex)) + 
+  geom_violin() +
+  geom_boxplot(width=0.1) +
+  xlab("Sex") + ylab("log(ACR)") 
+plot_grid(h1, h2, h3, h4)
+
+rm(h1, h2, h3, h4)
+```
+
+We discussed scatterplots in MODULE 2 for exploring relationships between two quantitative variables.
+
+```{r fig-scatter, fig.cap="Scatterplot for Quantitative Data"}
+NHANES %>% select(age, SBP, logACR, eGFR) %>%
+  ggpairs(progress=FALSE, columnLabels = c("Age", "SBP", "log(ACR)", "eGFR"),
+      lower=list(continuous=
+          function(data, mapping, ...){
+              ggplot(data = data, mapping = mapping) + geom_point() + 
+              geom_smooth(method=loess, ...) # adds loess to scatterplots
+          }
+      ),
+      diag=list(continuous="barDiag")
+  )
+#NHANES %>%
+#  ggplot(aes(x=SBP, y=eGFR)) +
+#  geom_point(size=3) +
+#  theme(axis.title.x=element_text(size=14),
+#      axis.title.y=element_text(size=14),
+#      axis.text.x=element_text(size=14),
+#      axis.text.y=element_text(size=14) )
+```
+
+- For categorical variables, bar plots are useful to see the number of categories, and the counts or frequencies of each category or the percent.
+
+```{r fig-barplot, fig.cap="Bar Plot for Categorical Data"}
+Inc <- stack(table(NHANES$income)) %>%
+  mutate(pct=round(values/sum(values)*100, 1),
+      lab=paste0(values, " (", pct, "%)"))
+
+h1 <- Inc %>%  # by raw counts (frequencies)
+  ggplot(aes(x=ind, y=values)) +
+  geom_col(fill="grey70", color=1) + 
+  geom_text(aes(label=values), hjust=1.1) + 
+  xlab("Income") + ylab("Count (N)")  + 
+  coord_flip()
+h2 <- Inc %>%  # by percent
+  ggplot(aes(x=ind, y=pct)) +
+  geom_col(fill="grey70", color=1) + 
+  geom_text(aes(label=lab), hjust=1.05) + 
+  xlab("Income") + ylab("Percent")  + ylim(0, 50) +
+  coord_flip()
+
+plot_grid(h1,h2, ncol=1)
+
+rm(Inc, h1, h2)
+```
+
+
+
+# Numerical Summaries
+
+After exploring the data graphically, numerical quantities can be an be used to summarize the data. For categorical data, this is typically the count and percent in each category. For quantitative data, these summaries are typically measures of central location, the mean or median, and measures of spread, the standard deviation or interquartile range. These summaries depend on whether or not the data are skewed.
+
+- If the data are symmetric and there are no extreme outliers in one tail or the other, then the mean or median is a good summary of central location. Typically the mean is used.
+
+```{r fig-symm, fig.cap="Mean and Median of Symmetric Distribution"}
+#NHANES %>%
+#  ggplot(aes(x = eGFR)) + 
+#  geom_histogram(aes(y=..density..), binwidth=10, color=1, fill="grey70") + 
+#  xlab("eGFR") + ylab("Density") +
+#  geom_density(size=1.5, col=1, linetype=3) +  
+  #stat_function(fun=dnorm, args=list(mean=mean(NHANES$eGFR, na.rm=TRUE),
+  #    sd=sd(NHANES$eGFR, na.rm=TRUE)), color=1, size=1.5) + 
+#  geom_vline(aes(xintercept=mean(eGFR, na.rm=TRUE), color="Mean"),
+#      linetype=1, size=2) + 
+#  geom_vline(aes(xintercept=median(eGFR, na.rm=TRUE), color="Median"),
+#      linetype=1, size=2) +
+#  scale_color_manual(name="", values=c(Mean=3, Median=4))
+par(mar=c(4.1, 4.1, 1, 1))
+hist(NHANES$eGFR, freq=FALSE, breaks=20, xlab="eGFR", main="")
+  lines(density(na.omit(NHANES$eGFR)), lwd=3, lty=3, col=1)
+  abline(v=mean(NHANES$eGFR, na.rm=TRUE), lwd=3, col=3)
+  abline(v=median(NHANES$eGFR, na.rm=TRUE), lwd=3, col=4)
+  legend("topleft", c("Density", "Mean", "Median"), col=c(1,3,4), 
+      lwd=3, lty=c(3,1,1), bty="n")
+```
+
+- When the data are skewed, the mean gets pulled to the tail of the distribution and may give an incorrect picture of the center of the data. The median is more appropriate.
+
+```{r fig-asymm, fig.cap="Mean and Median of Symmetric Distribution"}
+tmp <- NHANES$ACRcorrect[which(NHANES$ACRcorrect<=500)]
+par(mar=c(4.1, 4.1, 1, 1))
+hist(tmp, freq=FALSE, breaks=30, xlab="ACR - outlier removed", main="",
+    xaxt="n")
+  axis(1, labels=c(seq(0,200,50), "..."), at=seq(0,250,50))
+  lines(density(tmp), lwd=3, lty=3, col=1)
+  abline(v=mean(NHANES$ACRcorrect, na.rm=TRUE), lwd=3, col=3)
+  abline(v=median(NHANES$ACRcorrect, na.rm=TRUE), lwd=3, col=4)
+  legend("topright", c("Density", "Mean", "Median"), col=c(1,3,4), 
+      lwd=3, lty=c(3,1,1), bty="n")
+```
+
+Once the central location is identified then we describe the spread using the standard deviation when the mean is used, and the interquartile range when the median is used. The standard deviation quantifies the total distance of the data from the mean value. Since it is a measure of spread around the mean, it should only be paired with the mean, and not the median. The interquartile range is typically paired with the median. Below in Table \@ref(tab:tbl-Demo) is one you might see in a research manuscript that describes the individuals in a study. After carefully exploring the data, the appropriate summary statistics for each variable are given.
+
+```{r tbl-Demo, echo=FALSE}
+# My MkTblNew function was modified to try and better format the final
+# table. I indented sub-rows of variables.
+############################################################################
+##                                                                        ##
+##     Function to create Demographic Tables                              ##
+##          version 2021/06/10                                            ##
+##                                                                        ##
+##  :::INPUT:::                                                           ##
+##                                                                        ##
+##  DtaFrm: A data frame containing all the demographic variables.        ##
+##  ArmInd: Either a character string or a vector specifying the          ##
+##      stratification/intervention arm                                   ##
+##  ord: A data.frame with two columns named "var" and "flag". "var" is   ##
+##      a character vector of variable names. "flag" indicates if it is   ##
+##      a categorical variable to compute frequency and percent (flag=1)  ##
+##      or a continuous variable to compute mean, sd, median, IQR, min,   ##
+##      and max (flag=0).                                                 ##
+##  NP: Logical. Should non-parametric tests be used (KW and Fisher) or   ##
+##      parametric tests (ANOVA and chi-square)?                          ##
+##  na: Logical. Should missing values be included in the crosstabs of    ##
+##      categorical variables (but not the p-values)?                     ##
+##  rpct: Logical. Should the percentages for categorical variables be    ##
+##      row percentages? (default is FALSE)                               ##
+##                                                                        ##
+##                                                                        ##
+##  :::OUTPUT:::                                                          ##
+##                                                                        ##
+##  A data frame of 1) Mean (SD), Median [IQR], and (Min, Max) of the     ##
+##  continuous variables for each intervention arm and the p-value for    ##
+##  the ANOVA or Kruskal–Wallis test, and 2) the counts and percentages   ##
+##  of the levels of categorical variables for each arm, and a p-value    ##
+##  for the chi-square or Fisher's exact test.                            ##
+##                                                                        ##
+##                                                                        ##
+##  :::NOTES:::                                                           ##
+##                                                                        ##
+##  Updated!  P-values will always be 2 digits, regardless of dig=        ##
+##  Updated!  For na=F, a missing row is presented in the table, but the  ##
+##            percentages do not include missing values (just give NA).   ##
+##            Added the option to compute row percentages instead of      ##
+##            column percentages (default is FALSE for row percent)       ##
+##  Updated!  Compute Mean (SD), Median [IQR], and (Min, Max) for         ##
+##            continuous variables (no more MVs and MdVs)                 ##
+##            Changed the way the variables are inputed so that the       ##
+##            order of the variables is retained.                         ##
+##  Updated!  Corrected mistake from previous update. If MVs=MdVs=NULL    ##
+##            and na=F, then the code would throw an error because it     ##
+##            couldn't find "Expose".                                     ##
+##  Updated!  Missing category not included in p-value calculation for    ##
+##            FVs                                                         ##
+##  Updated!  Changed "as.factor" to "factor" in analyses of FVs          ##
+##  Updated!  Added couple of lines so the ArmInd can be a vector or      ##
+##            character string                                            ##
+##  Updated!  Removed hybrid=TRUE option in ?fisher.test                  ##
+##  Updated!  Added option to include NAs in factors or not (default no)  ##
+##            Added option to perform a nonparametric test (default no)   ##
+##  Updated!  For categorical variables with missing, the percentages     ##
+##            don't include missing counts when na=FALSE.                 ##
+##                                                                        ##
+############################################################################
+MkTblNew <- function(DtaFrm, ArmInd, ord, NP=F, na=T, dig=2, rpct=FALSE, ...){
+
+    if(any(names(ord) != c("var", "flag"))){
+        stop("ord names must be 'var' and 'flag', respectively")}
+
+    if(length(ArmInd)==1){
+        ArmInd <- factor(DtaFrm[,match(ArmInd, colnames(DtaFrm) )])
+    }
+
+    MeanSD <- function(x, dgts=2, ...){
+        mm  <- round(mean(x, ...), dgts)
+        std <- round(sd(x, ...), dgts)
+        rslt <- paste(mm, " (", std, ")", sep="")   # mean (SD)
+        return(rslt)
+    }
+    MedRange <- function(x, dgts=2, ...){
+        mm  <- round(median(x, ...),dgts)
+        rng1 <- round(quantile(x, ...)[2],dgts)
+        rng2 <- round(quantile(x, ...)[4],dgts)
+        rslt <- paste(mm, " [", rng1,"-", rng2, "]", sep="")
+        return(rslt)
+    }
+    MinMax <- function(x, dgts=2, ...){
+        m1 <- round(min(x, ...), dgts)
+        m2 <- round(max(x, ...), dgts)
+        rslt <- paste0("(", m1, ", ", m2, ")")
+        return(rslt)
+    }
+    NN <- function(x){sum(!is.na(x))}
+
+    N <- sum(table(ArmInd))           # total randomized
+    noArms <- length(unique(ArmInd))  # number of trt arms
+    
+    rslt <- matrix(c(N,table(ArmInd), NA), nrow=1) 
+      rownames(rslt) <- "n"           # initialze results table
+
+    Cols <- match(ord$var, colnames(DtaFrm))
+    for(ee in 1:length(Cols)){
+
+        if(ord$flag[ee]==0){
+            Expose <- DtaFrm[,Cols[ee]]
+            Ns <- c(NN(Expose), tapply(X=Expose, INDEX=ArmInd, FUN=NN))
+            Mns <- c(MeanSD(Expose, dgts=dig, na.rm=T),
+                tapply(X=Expose, INDEX=ArmInd, FUN=MeanSD, 
+                na.rm=T, dgts=dig))
+            Mds <- c(MedRange(Expose, dgts=dig, na.rm=T),
+                tapply(X=Expose, INDEX=ArmInd, FUN=MedRange, 
+                na.rm=T, dgts=dig))
+            MiMa <- c(MinMax(Expose, dgts=dig, na.rm=T),
+                tapply(X=Expose, INDEX=ArmInd, FUN=MinMax, 
+                na.rm=T, dgts=dig))
+            if(!isTRUE(NP)){ out <- oneway.test(Expose ~ ArmInd)
+            } else {out <- kruskal.test(Expose ~ ArmInd)}
+            tmp <- cbind(matrix(c(Ns, Mns, Mds, MiMa), nrow=4, byrow=T),
+                c(round(out$p.value, 2), NA, NA, NA))
+
+            rownames(tmp) <- paste0("&nbsp;&nbsp;&nbsp;&nbsp;",
+                names(DtaFrm)[Cols[ee]],
+                c(" N=", " Mean (SD)", " Median [IQR]", " (Min, Max)"))
+            rownames(tmp)[1] <- paste0(names(DtaFrm)[Cols[ee]], " N=")
+
+            rslt <- rbind(rslt,tmp)
+ 
+        } else if(ord$flag[ee]==1){
+            Expose1 <- factor(DtaFrm[,Cols[ee]])  # no NAs in factor
+            Expose <- addNA(Expose1, ifany=T)     # NAs as level
+
+            # hypothesis tests with NAs excluded
+            if(!isTRUE(NP)){ X2 <- chisq.test(table(Expose1, ArmInd))
+            } else {X2 <- fisher.test(table(Expose1, ArmInd))}  # Exact Test
+            pvals <- as.character(round(X2$p.value, 2))
+
+            CTS <- table(Expose, ArmInd)  # counts of exposure by factor
+            totct <- table(Expose)        # counts overall
+            nofac <- length(unique(levels(Expose)))  # number factors
+
+            if(!isTRUE(na)){  # don't include NAs in percentages
+                tmp <- table(Expose1, ArmInd)
+                Nf <- sum(!is.na(Expose1))
+                totpct <- round(table(Expose1) / sum(table(Expose1))*100, dig)
+                if(isTRUE(rpct)){  # row percentages
+                    pcts <- round( tmp/c(rowSums(tmp))
+                        *100,dig)  # percentages not including NA
+                    # Only add row of NA percent if there are NAs!
+                    if(any(is.na(Expose1))){
+                        NAtot <- tapply(is.na(Expose1), ArmInd, sum)
+                        pcts <- rbind(pcts, round(NAtot/sum(NAtot)*100, 2))
+                        totpct <- c(totpct, NA)
+                    }          
+                } else if(!isTRUE(rpct)){
+                    pcts <- round( t(t(tmp)/c(colSums(tmp)))
+                        *100,dig)  # percentages not including NA
+                    totpct <- round(table(Expose1) / sum(table(Expose1))*100, dig)
+                    # Only add row of NA percent if there are NAs!
+                    if(any(is.na(Expose1))){
+                        pcts <- rbind(pcts, NA)
+                        totpct <- c(totpct, NA)
+                    }
+                }
+            } else{
+                tmp <- table(Expose, ArmInd)
+                Nf <- sum(!is.na(Expose))
+                if(isTRUE(rpct)){  # row percentages
+                    pcts <- round( tmp/rowSums(tmp) *100,dig)
+                } else if(!isTRUE(rpct)){
+                    pcts <- round( t(t(tmp)/c(table(ArmInd))) *100,dig)
+                }
+                totpct <- round(totct / N*100, dig)
+            }
+
+            dfm <- matrix(c(paste0(CTS, " (", pcts, ")"), 
+                rep(NA, nofac)), ncol=noArms+1)
+            dfm <- cbind(matrix(paste0(totct," (",totpct,")"),ncol=1),dfm)
+            dfm <- rbind(c(rep(NA, dim(dfm)[2]-1),pvals), dfm)
+            rownames(dfm) <- c(paste0(names(DtaFrm)[Cols[ee]], " (n=", Nf, ")"), 
+                paste0("&nbsp;&nbsp;&nbsp;&nbsp;", names(DtaFrm)[Cols[ee]], " ",
+                    unique(levels(Expose))))
+
+            rslt <- rbind(rslt,dfm)
+        }
+    }
+    fin <- data.frame(rslt)
+      colnames(fin) <- c("Overall", paste0("Arm_",names(table(ArmInd))), "P")
+    return(fin)
+}
+############################################################################
+
+
+ord <- data.frame(var=c("age", "sex", "income", "Numpeople", "SBP",
+    "ACRcorrect", "logACR", "eGFR"),
+    flag=c(0,1,1,0,0,0,0,0))
+
+DemoTbl <- MkTblNew(NHANES, ArmInd="sex", ord=ord, NP=FALSE, na=TRUE, dig=2)
+kable(DemoTbl, caption="Characteristics of Study Individuals",
+    col.names=gsub("Arm_", "", names(DemoTbl)), align="cccr")
+rm(DemoTbl, ord)  # clean up
+```
+
+
+# Conclusion
+
+In this module, we have discussed the importance of identifying variable types and how different types of variables will inform analytic plans. We describe several exploratory graphical displays and discuss their characteristics and limitations. We introduce some numerical summaries of data and when each is appropriate. Consult with a quantitative expert when possible to help tease out nuances when exploring your data.
+
+
+
+
+
