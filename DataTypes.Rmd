@@ -35,11 +35,13 @@ options(knitr.kable.NA="")
 
 # Introduction
 
-Welcome to the module “Data Types and Summaries”. In this module we will discuss different data types and exploring data using graphical and numerical summaries. At the end of the module, you will learn how to explore data of different types.
+Welcome to “Data Types and Summaries”. In this video we will discuss different data types and exploring data using graphical and numerical summaries. At the end of the module, you will learn how to explore data of different types.
 
-After collecting data and before performing any type of inferential analyses, it’s extremely important to “know the data” that you have. Part of “knowing the data” means knowing the design of the study and how the measures were collected (MODULE 4) and having some clinical knowledge of the measures collected (See MODULE 3). Another part of “knowing the data” means being very familiar with the data values themselves. For example...What type of data is each measurement? How are missing values represented? What values are considered extreme or outliers, and what values are biologically impossible? How are the values of a measurement spread around some central number? How do the measurements relate to each other?
+Data arises from study measurements.  Measurement is a fundamental component of all scientific research, so the use of sound measurement principles is essential in any well-designed clinical research study.  Even if you are only a consumer of the clinical research literature, understanding the measures used in obtaining the data and the variables used in analyzing the data is required to evaluate the credibility of any reported study.  This knowledge and understanding are even more important if you are designing or conducting the study yourself.
 
-These questions and more need to be explored before performing any type of analyses. In fact, the answers to these questions may change the analytic approach that was planned during study design. And that’s fine if it does! But exploring the data first is critical in ensuring that the planned analysis is appropriate.
+As a result, after the data is collected and before any analyses are performed, it’s extremely important to “know the data” that you have. Part of “knowing the data” means knowing the design of the study, how the measures were collected (MODULE 4) and having some clinical knowledge of the measures collected (See MODULE 3). Another part of “knowing the data” means being very familiar with the raw data values that have been collected. For example, what data type is associated with each study measurement? How are missing values represented? What values are considered extreme or outliers, and what values are biologically implausible or impossible? How are the individual values of a study measurement spread out and what is their central tendency? How do the different study measurements relate to each other?
+
+These questions and more need to be understood before performing any type of data analyses. In fact, the answers to these questions may change the analytic approach that was planned during study design. And that’s fine if it does! But exploring the data first is critical in ensuring that the planned analysis is appropriate.
 
 
 
