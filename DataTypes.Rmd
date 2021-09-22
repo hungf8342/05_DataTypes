@@ -47,7 +47,7 @@ These questions and more need to be understood before performing any type of dat
 
 # Data Types
 
-We will motivate our discussion using the example in MODULE 3. The research question was “is there a link between hypertension and kidney function?” and we use systolic blood pressure as a proxy for hypertension, and eGFR as our primary outcome to represent kidney function. We also measure other variables of interest such as age, sex, and income. Table \@ref(tab:tbl-Data) displays the first 10 of 300 participants in the study.
+We will motivate our discussion using an example from an earlier video in our course. In that video we were exploring the following: “is there a link between hypertension and kidney function?” We used systolic blood pressure as a proxy measure for hypertension, and eGFR as our primary outcome to represent kidney function. We also measured other variables of interest such as age, sex, and income. Table \@ref(tab:tbl-Data) displays the first 10 of the 300 participants in the study.
 
 ```{r tbl-Data, warning=FALSE, echo=FALSE}
 NHANES <- read.csv(file="NHANESdat.csv", header=TRUE, na.strings="",
@@ -66,26 +66,26 @@ levels(NHANES$income) <- list(  # collapse income categories for ease
     "$100,000 and Over"="15")  # set 12 to missing
 
 NHANES[1:10,] %>% select(-ACRcorrect, -logACR) %>%
-  kable(caption="Snapshot of NHANES Data")
+  kable(caption="Snapshot of NHANES Data", digits= 1)
 ```
 
-When exploring new data, we should first identify the data type of each variable.The data type will ultimately play a significant role in what types of analyses, both exploratory and inferential are appropriate. There are two broad types of data: categorical and quantitative, and these can be broken into sub-types.
+When examining a new dataset, we should first identify the data type of each variable. The data type will ultimately play a significant role in what types of analyses, both exploratory and inferential are appropriate. There are two broad types of data: qualitative and quantitative. Qualitative data consists of non-numeric attributes or characteristics of a thing or phenomenon while quantitative data consists of numeric attributes or characteristics.  Both qualitative and quantitative data can be broken into sub-types.
 
-- Categorical data are those that can be grouped into classes or categories, as the name implies. Categorical data can be binary, nominal, or continuous. 
+- Qualitative data are those that can be grouped into classes or categories and have multiple subtypes, including binary, nominal, or continuous. 
 
-  - In our example, sex is a binary variable. It only takes two values, 0 or 1, and these values cover all possibilities. Generally, the dataset should come with a data dictionary or some documentation to explain what a value of 0 or 1 means, for example, 0=female sex and 1=male sex.
+  - In our example, sex is a binary or dichotomous variable representing biological sex or ‘sex at birth’ with values 0 or 1. Generally, the dataset should have an accompanying data dictionary or other formal document that explains details about study measurements, variables, and values of individual variables.  Documentation would explain that for sex, for example, a value of ‘0’ represents ‘female sex’ and a value of ‘1’ represents ‘male sex ’.  This numerical 0-1 representation of a binary variable is referred to as an indicator variable. The binary variable for sex, for example, gives rise to two indicator variables, one for male sex and one for female sex. In this dataset, the indicator variable for male sex is used with the value 1 used for males and the value 0 for females. 
   
-  - SEQN is the subject identifier and is a nominal categorical variable. Nominal variables have groups for which there is no natural ordering.
+  - The column labeled SEQN is a variable representing the subject identifier and is a nominal variable. Nominal variables have groups for which there is no natural ordering.
   
-  - Income is an ordinal categorical variable, or one in which there is a natural ordering. the groups have a ranking in that "\$0 to \$24,999" < "\$25,000 to \$54,999"
+  - Income is an ordinal variable, or one in which there is a natural ordering. the groups have a ranking in that "\$0 to \$24,999" < "\$25,000 to \$54,999"
 
-- The remaining variables are quantitative and there are two types, discrete and continuous.
+- The remaining variables are quantitative data of which there are two sub-types, discrete and continuous.
 
-  - Discrete data are isolated or countable. There is no value between any two values. Number of people living in a household is an example of this type of variable. There can only be 0, 1, 2, ... people in a house. Theoretically discrete data can go to infinity.
+  - Discrete data are isolated or countable, only taking on certain values. There is no value between any two consecutive discrete values. The number of people living in a household is an example of this variable type. There can only be 0, 1, 2, ... people in a household. For a given discrete variable, there may potentially be an infinite number of discrete values.
   
   - Age, SBP, and eGFR are continuous quantitative data. Continuous data are uncountable, and theoretically, between any two given values there exists another value. Be careful though. There will be limits to measurement accuracy for continuous data. Though age is measured in whole numbers in our example, it is still a continuous variable and not discrete, because ages like 39.5 still make sense.
 
-Different variable types require difference analytic considerations, whether they are the primary outcome of the study, the primary exposure, or extraneous variables. Knowing the type of variables will have great impact on the analytic approach and the conclusions that will be drawn. A quantitative expert can help identify variable types and analytic approaches.
+Different variable types require different analytic considerations, whether they are the primary outcome of the study, the primary exposure, or variables that have other roles in the study. Knowing the type of each variable is critical to determining the appropriate analytic approach and the type of conclusions that one may draw from statistical analyses of that variable. A quantitative expert can help identify variable types and associated analytic approaches for your study measurements.
 
 
 
