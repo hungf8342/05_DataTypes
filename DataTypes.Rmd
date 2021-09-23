@@ -1,5 +1,5 @@
 ---
-title: "Data Types and Summaries"
+title: "Data Types and Summarizing Data"
 author: "Clemontina A Davenport, PhD"
 date: "June 18, 2021"
 output:
@@ -91,9 +91,9 @@ Different variable types require different analytic considerations, whether they
 
 # Graphical Summaries
 
-Once the data types are identified, plots are simple yet powerful tools to provide information about the data. You should plot every single variable you will use in your analyses, regardless of how it will be used. Even variables that will only appear in a descriptive table should be plotted to ensure that the numerical summaries (discussed a little later) given are appropriate.
+A first step when beginning analysis of a dataset is to use graphical summaries to provide information about the structure of the data. Ideally, you should plot every single variable you will use in your analyses, regardless of how they will be used. Even variables that will only appear in a descriptive table should be plotted to ensure that the numerical summaries (discussed a little later) provided are appropriate.
 
-Histograms are a good starting point for getting to know individual quantitative variables. Attention should be drawn to overall pattern, shape, center, and spread, and to deviations and outliers from this pattern. In Figure \@ref(fig:fig-hist), ACR has an extremely large outlier at 21,000 mg/g. It is up to the researcher who has the clinical expertise to determine if this is an implausible value or and invalid one.
+Histograms are a good starting point for getting to know the distribution of individual quantitative variables. Attention should be drawn to overall pattern, shape, center, and spread, and to deviations and outliers from this pattern. In Figure \@ref(fig:fig-hist), ACR has an extremely large outlier at 21,000 mg/g. It is up to the researcher on the team with clinical expertise to determine if this is an implausible or invalid value.
 
 ```{r fig-hist, fig.cap="Histogram for Quantitative Data"}
 h1 <- NHANES %>%
@@ -161,7 +161,7 @@ NHANES %>%
   xlab("log(ACR) - outlier removed") + ylab("Density")
 ```
 
-Boxplots are also useful for graphically displaying common summary statistics of data, the median, the 25th percentile, and the 75th percentile. The distance between the 25th and 75th percentile is called the interquartile range, and any data points outside of 1.5 times the interquartile range are plotted as outliers.
+Boxplots are another useful graphical summary for displaying common summary statistics of a variable: the median, the 25th percentile, and the 75th percentile. The distance between the 25th and 75th percentile is called the interquartile range, and any data points outside of 1.5 times the interquartile range are plotted individually to highlight their separation from the bulk of the data values.
 
 ```{r fig-boxplot, fig.cap="Boxplot for Quantitative Data"}
 NHANES %>% mutate(Grp=1) %>%
@@ -174,7 +174,7 @@ NHANES %>% mutate(Grp=1) %>%
 #    cex.main=1.5, ylab="eGFR", main="")
 ```
 
-Just to be clear, though a point may be plotted as an outlier in a box plot does not necessarily mean it is an outlier in a clinical sense. Nor is it necessarily problematic for analyses. The clinical expert and the quantitative expert together can decide how extreme values should be handled.
+Although a point outside 1.5 times the interquartile range may visually appear as an outlying value, this does not necessarily mean it is an outlier in a clinical sense. Nor is it necessarily problematic for analyses. The clinical expert and the quantitative expert together can decide whether extreme values are problematic and how they should be handled.
 
 ```{r fig-boxplotNH, fig.cap="Boxplot for NHANES Data"}
 h1 <- NHANES %>% mutate(Grp=1) %>%
@@ -207,7 +207,7 @@ plot_grid(h1, h2, h3, h4)
 rm(h1, h2, h3, h4)
 ```
 
-Boxplots alone are not sufficient graphical summaries because they are limited by what characteristics can be displayed. Consider a boxplot of hypothetical data in Figure \@ref(fig:fig-boxbi).
+While histograms and boxplots convey similar and overlapping information about the distribution of a variable, the following boxplot of hypothetical data provides an example where boxplots are limited by what characteristics can be displayed. Consider a boxplot of hypothetical data in Figure \@ref(fig:fig-boxbi).
 
 ```{r fig-boxbi, fig.cap="Graphical Limitations of Boxplots"}
 set.seed(1)
@@ -220,7 +220,7 @@ dat %>%
       axis.ticks.x = element_blank())
 ```
 
-The actual distribution of the data is given in Figure \@ref(fig:fig-histbi). The boxplot does not give any hints to the two peaks in the data.
+The actual distribution of these data is given in Figure \@ref(fig:fig-histbi). The boxplot does not provide any information that would alert you to the two-peak structure of these data.
 
 ```{r fig-histbi, fig.cap="Graphical Limitations of Boxplots"}
 dat %>%
@@ -235,7 +235,7 @@ dat %>%
 #  box()
 ```
 
-Violin plots give the same information as a boxplot, except the box is replaced with estimated density of the data.
+Violin plots provide the same information as a boxplot, except the box is replaced with estimated density of the data.
 
 ```{r fig-violin, fig.cap="Violin Plot for Quantitative Data"}
 dat %>%
@@ -248,7 +248,7 @@ dat %>%
 rm(dat)
 ```
 
-Below are violin plots of the NHANES data stratified by sex.
+Below are violin plots for several variables from the NHANES data stratified by sex.
 
 ```{r fig-violinNH, fig.cap="Violin Plots for NHANES Data"}
 h1 <- NHANES %>% mutate(Sex=factor(ifelse(sex==1, "Male", "Female"))) %>%
@@ -276,7 +276,7 @@ plot_grid(h1, h2, h3, h4)
 rm(h1, h2, h3, h4)
 ```
 
-We discussed scatterplots in MODULE 2 for exploring relationships between two quantitative variables.
+In an earlier video in our course, we discussed scatterplots for exploring relationships between two quantitative variables.
 
 ```{r fig-scatter, fig.cap="Scatterplot for Quantitative Data"}
 NHANES %>% select(age, SBP, logACR, eGFR) %>%
