@@ -327,9 +327,9 @@ rm(Inc, h1, h2)
 
 # Numerical Summaries
 
-After exploring the data graphically, numerical quantities can be an be used to summarize the data. For categorical data, this is typically the count and percent in each category. For quantitative data, these summaries are typically measures of central location, the mean or median, and measures of spread, the standard deviation or interquartile range. These summaries depend on whether or not the data are skewed.
+After exploring the data graphically, numerical quantities can be an be used to summarize the data. For categorical data, this is typically the count and percent in each category. For quantitative data, these summaries are typically measures of central tendency, the mean or median, and measures of spread, the standard deviation or interquartile range. The mean is a measure of center based on the average of a set of observations, while the median is a measure of center based on the magnitude of the middle value of a set of observations.  An important difference between these measures relates to their handling of outlying values and as a result are usually selected based on the overall shape or distribution of the data.
 
-- If the data are symmetric and there are no extreme outliers in one tail or the other, then the mean or median is a good summary of central location. Typically the mean is used.
+- If the data are symmetric and there are no extreme data points in the tails of the distribution, then the mean or median is a good summary of central tendency.
 
 ```{r fig-symm, fig.cap="Mean and Median of Symmetric Distribution"}
 #NHANES %>%
@@ -368,7 +368,7 @@ hist(tmp, freq=FALSE, breaks=30, xlab="ACR - outlier removed", main="",
       lwd=3, lty=c(3,1,1), bty="n")
 ```
 
-Once the central location is identified then we describe the spread using the standard deviation when the mean is used, and the interquartile range when the median is used. The standard deviation quantifies the total distance of the data from the mean value. Since it is a measure of spread around the mean, it should only be paired with the mean, and not the median. The interquartile range is typically paired with the median. Below in Table \@ref(tab:tbl-Demo) is one you might see in a research manuscript that describes the individuals in a study. After carefully exploring the data, the appropriate summary statistics for each variable are given.
+Once the central location is identified then we describe the spread using the standard deviation when the mean is used, and the interquartile range when the median is used. Similar to the mean, the standard deviation is a measure of spread focused on numerical differences in the magnitude of the observations. The standard deviation is a function of the squared deviations of each individual observation from the mean of the observations. Since it is a measure of spread around the mean, it should only be paired with the mean, and not the median. The interquartile range describes the spread of the middle fifty percent of the data when ordered from smallest to largest and is  typically paired with the median. Below in Table \@ref(tab:tbl-Demo) is one you might see in a research manuscript that describes the individuals in a study. After carefully exploring the data, the appropriate summary statistics for each variable are given.
 
 ```{r tbl-Demo, echo=FALSE}
 # My MkTblNew function was modified to try and better format the final
