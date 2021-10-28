@@ -35,11 +35,11 @@ options(knitr.kable.NA="")
 
 # Introduction
 
-Welcome to “Data Types and Summaries”. In this video we will discuss different data types and exploring data using graphical and numerical summaries. At the end of the module, you will learn how to explore data of different types.
+Welcome to “Data Types and Summarizing Data”. In this video we will discuss different data types and how to explore data using graphical and numerical summaries. 
 
 Data arises from study measurements.  Measurement is a fundamental component of all scientific research, so the use of sound measurement principles is essential in any well-designed clinical research study.  Even if you are only a consumer of the clinical research literature, understanding the measures used in obtaining the data and the variables used in analyzing the data is required to evaluate the credibility of any reported study.  This knowledge and understanding are even more important if you are designing or conducting the study yourself.
 
-As a result, after the data is collected and before any analyses are performed, it’s extremely important to “know the data” that you have. Part of “knowing the data” means knowing the design of the study, how the measures were collected (MODULE 4) and having some clinical knowledge of the measures collected (See MODULE 3). Another part of “knowing the data” means being very familiar with the raw data values that have been collected. For example, what data type is associated with each study measurement? How are missing values represented? What values are considered extreme or outliers, and what values are biologically implausible or impossible? How are the individual values of a study measurement spread out and what is their central tendency? How do the different study measurements relate to each other?
+As a result, after the data is collected and before any analyses are performed, it is extremely important to “know the data” that you have. Part of “knowing the data” means knowing the design of the study, how the measures were collected (MODULE 4) and having some clinical knowledge of the measures collected (See MODULE 3). Another part of “knowing the data” means being very familiar with the raw data values that have been collected. For example, what data type is associated with each study measurement? How are missing values represented? What values are considered extreme or outliers, and what values are biologically implausible or impossible? How are the individual values of a study measurement spread out and what is their central tendency? How do the different study measurements relate to each other?
 
 These questions and more need to be understood before performing any type of data analyses. In fact, the answers to these questions may change the analytic approach that was planned during study design. And that’s fine if it does! But exploring the data first is critical in ensuring that the planned analysis is appropriate.
 
@@ -71,9 +71,9 @@ NHANES[1:10,] %>% select(-ACRcorrect, -logACR) %>%
 
 When examining a new dataset, we should first identify the data type of each variable. The data type will ultimately play a significant role in what types of analyses, both exploratory and inferential are appropriate. There are two broad types of data: qualitative and quantitative. Qualitative data consists of non-numeric attributes or characteristics of a thing or phenomenon while quantitative data consists of numeric attributes or characteristics.  Both qualitative and quantitative data can be broken into sub-types.
 
-- Qualitative data are those that can be grouped into classes or categories and have multiple subtypes, including binary, nominal, or continuous. 
+- Qualitative data are those that can be grouped into classes or categories and have multiple subtypes, including binary, nominal, and ordinal. 
 
-  - In our example, sex is a binary or dichotomous variable representing biological sex or ‘sex at birth’ with values 0 or 1. Generally, the dataset should have an accompanying data dictionary or other formal document that explains details about study measurements, variables, and values of individual variables.  Documentation would explain that for sex, for example, a value of ‘0’ represents ‘female sex’ and a value of ‘1’ represents ‘male sex ’.  This numerical 0-1 representation of a binary variable is referred to as an indicator variable. The binary variable for sex, for example, gives rise to two indicator variables, one for male sex and one for female sex. In this dataset, the indicator variable for male sex is used with the value 1 used for males and the value 0 for females. 
+  - In our example, sex is a binary or dichotomous variable representing biological sex or ‘sex at birth’ with values 0 or 1. Generally, the dataset should have an accompanying data dictionary or other formal document that explains details about study measurements, variables, and values of individual variables.  Documentation would explain that for sex, for example, a value of ‘0’ represents ‘female sex’ and a value of ‘1’ represents ‘male sex’.  This numerical 0-1 representation of a binary variable is referred to as an indicator variable. The binary variable for sex, for example, gives rise to two indicator variables, one for male sex and one for female sex. In this dataset, the indicator variable for male sex is used with the value 1 used for males and the value 0 for females. 
   
   - The column labeled SEQN is a variable representing the subject identifier and is a nominal variable. Nominal variables have groups for which there is no natural ordering.
   
@@ -143,7 +143,7 @@ plot_grid(h1, h2, h3, h4)
 rm(h1, h2, h3, h4)
 ```
 
-Even when the outlier is removed, ACR is still very skewed. This will be an important consideration in analyses, such as the need to transform or categorized this variable.
+Even when the outlier is removed, ACR is still very skewed. This will be an important consideration in analyses, such as the need to transform or categorize this variable.
 
 ```{r fig-histACR, fig.cap="Histogram for Quantitative Data"}
 NHANES %>%
@@ -276,7 +276,7 @@ plot_grid(h1, h2, h3, h4)
 rm(h1, h2, h3, h4)
 ```
 
-In an earlier video in our course, we discussed scatterplots for exploring relationships between two quantitative variables.
+In an earlier video in our course, we discussed using scatterplots for exploring relationships between two quantitative variables.
 
 ```{r fig-scatter, fig.cap="Scatterplot for Quantitative Data"}
 NHANES %>% select(age, SBP, logACR, eGFR) %>%
