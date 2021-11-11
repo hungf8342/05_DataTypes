@@ -47,7 +47,7 @@ These questions and more need to be understood before performing any type of dat
 
 # Data Types
 
-We will motivate our discussion using an example from an earlier video in our course. In that video we were exploring the following: “is there a link between hypertension and kidney function?” We used systolic blood pressure as a proxy measure for hypertension, and eGFR as our primary outcome to represent kidney function. We also measured other variables of interest such as age, sex, and income. Table \@ref(tab:tbl-Data) displays the first 10 of the 300 participants in the study.
+We will motivate our discussion using an example from an earlier video in our course. In the third video we were exploring the following: “is there a link between hypertension and kidney function?” We used systolic blood pressure as a proxy measure for hypertension, and eGFR as our primary outcome to represent kidney function. We also measured other variables of interest such as age, sex, and income. Table \@ref(tab:tbl-Data) displays the first 10 of the 300 participants in the study.
 
 ```{r tbl-Data, warning=FALSE, echo=FALSE}
 NHANES <- read.csv(file="NHANESdat.csv", header=TRUE, na.strings="",
@@ -69,7 +69,7 @@ NHANES[1:10,] %>% select(-ACRcorrect, -logACR) %>%
   kable(caption="Snapshot of NHANES Data", digits= 1)
 ```
 
-When examining a new dataset, we should first identify the data type of each variable. The data type will ultimately play a significant role in what types of analyses, both exploratory and inferential are appropriate. There are two broad types of data: qualitative and quantitative. Qualitative data consists of non-numeric attributes or characteristics of a thing or phenomenon while quantitative data consists of numeric attributes or characteristics.  Both qualitative and quantitative data can be broken into sub-types.
+When examining a new dataset, we should first identify the data type of each variable. The data type will ultimately play a significant role in what types of analyses, exploratory or inferential, are appropriate. There are two broad types of data: qualitative and quantitative. Qualitative data consists of non-numeric attributes or characteristics of a thing or phenomenon while quantitative data consists of numeric attributes or characteristics.  Both qualitative and quantitative data can be broken into sub-types.
 
 - Qualitative data are those that can be grouped into classes or categories and have multiple subtypes, including binary, nominal, and ordinal. 
 
@@ -83,7 +83,7 @@ When examining a new dataset, we should first identify the data type of each var
 
   - Discrete data are isolated or countable, only taking on certain values. There is no value between any two consecutive discrete values. The number of people living in a household is an example of this variable type. There can only be 0, 1, 2, ... people in a household. For a given discrete variable, there may potentially be an infinite number of discrete values.
   
-  - Age, SBP, and eGFR are continuous quantitative data. Continuous data are uncountable, and theoretically, between any two given values there exists another value. Be careful though. There will be limits to measurement accuracy for continuous data. Though age is measured in whole numbers in our example, it is still a continuous variable and not discrete, because ages like 39.5 still make sense. Say, however, age was collected in 5-year intervals so we only knew a patient was 35-40. We can in this case consider age to be an ordered, discrete variable. We call these ordered, discrete variables ordinal variables. 
+  - Age, SBP, and eGFR are continuous quantitative data. Continuous data are uncountable, and theoretically, between any two given values there exists another value. Be careful though. There will be limits to measurement accuracy for continuous data. Though age is measured in whole numbers in our example, it is still a continuous variable and not discrete, because ages like 39.5 still make sense. Say, however, age was collected in 5-year intervals so we only knew a patient was 35-40. We can in this case consider age to be ordered and discrete, or an ordinal variable. 
 
 Different variable types require different analytic considerations, whether they are the primary outcome of the study, the primary exposure, or variables that have other roles in the study. Knowing the type of each variable is critical to determining the appropriate analytic approach and the type of conclusions that one may draw from statistical analyses of that variable. A quantitative expert can help identify variable types and associated analytic approaches for your study measurements.
 
@@ -143,7 +143,7 @@ plot_grid(h1, h2, h3, h4)
 rm(h1, h2, h3, h4)
 ```
 
-Even when the outlier is removed, ACR is still very skewed. Skewed variables have a small portion of observed values predominantly to the left or right of the majority of variable values, resulting in a clustering to one side of a histogram. This will be an important consideration in analyses, such as the need to transform or categorize this variable. In some cases, we can apply a mathematical function to or categorize a variable to get rid of skewedness.
+Even when the outlier is removed, ACR is still very skewed. Skewed variables have a small portion of observed values predominantly to the left or right of the majority of variable values, resulting in a clustering to one side of a histogram. This will be an important consideration in analyses, such as the need to transform or categorize this variable. In some cases, we can apply a mathematical function or categorize a variable to get rid of skewedness.
 
 ```{r fig-histACR, fig.cap="Histogram for Quantitative Data"}
 NHANES %>%
@@ -161,7 +161,7 @@ NHANES %>%
   xlab("log(ACR) - outlier removed") + ylab("Density")
 ```
 
-Boxplots are another useful graphical summary for displaying common summary statistics of a variable: the median, the 25th percentile, and the 75th percentile. You can think of a boxplot as a visual summary of a histogram. A single boxplot shows the median, 25th percentile, and 75th percentile rather than the entire distribution of a quantitative, usually continuous variable. We can plot multiple boxplots side-by-side to compare the distribution summary statistics across different groups of observations. The boxplot x-axis is then the group labels, and the y-axis, which is equivalent to the x-axis in histograms, consists of the variable values. The distance between the 25th and 75th percentile is called the interquartile range, and any data points outside of 1.5 times the interquartile range are plotted individually to highlight their separation from the bulk of the data values.
+Boxplots are another useful graphical summary for displaying common summary statistics of a variable: the median, the 25th percentile, and the 75th percentile. You can think of a boxplot as a rotated visual summary of a histogram. A single boxplot shows the median, 25th percentile, and 75th percentile rather than the binned distribution of a quantitative, continuous variable. We can plot multiple boxplots side-by-side to compare the distribution summary statistics across different groups of observations. The boxplot x-axis is then the group labels, and the y-axis, which is equivalent to the x-axis in histograms, consists of the continuous variable values. The distance between the 25th and 75th percentile is called the interquartile range, and any data points outside of 1.5 times the interquartile range are plotted individually to highlight their separation from the bulk of the data values.
 
 ```{r fig-boxplot, fig.cap="Boxplot for Quantitative Data"}
 NHANES %>% mutate(Grp=1) %>%
@@ -235,7 +235,7 @@ dat %>%
 #  box()
 ```
 
-Violin plots provide the same information as a boxplot, except the box is replaced or augmented with the estimated density of the data. The density curve is essentially a mirrored, smoothed-out version of the y-axis's histogram.
+Violin plots provide the same information as a boxplot, except the box is replaced or augmented with the estimated density of the data. The density curve is essentially a mirrored, smoothed-out version of the y-axis variable's histogram.
 
 ```{r fig-violin, fig.cap="Violin Plot for Quantitative Data"}
 dat %>%
@@ -276,7 +276,7 @@ plot_grid(h1, h2, h3, h4)
 rm(h1, h2, h3, h4)
 ```
 
-In an earlier video in our course, we discussed using scatterplots for exploring relationships between two quantitative variables. Here, we consider four continuous variables: Age, SBP, log(ACR), and eGFR. There are 10 unique pairs of variables (including pairing variables with themselves). For variables paired with themselves, we plot a histogram, and with variables paired with others, we plot a histogram with a smoothed trend line passing through the points. In the spaces for redundant variable pairs, we display the correlation between the two variables.
+In an earlier video in our course, we discussed using scatterplots for exploring relationships between two quantitative variables. Here, we consider four continuous variables: Age, SBP, log(ACR), and eGFR. There are 10 unique pairs of variables (including pairing variables with themselves). For variables paired with themselves, we plot a histogram, and with variables paired with others, we plot a scatterplot with a smoothed trend line passing through the points. In the spaces for redundant variable pairs, we display the correlation between the two variables.
 
 ```{r fig-scatter, fig.cap="Scatterplot for Quantitative Data"}
 NHANES %>% select(age, SBP, logACR, eGFR) %>%
@@ -370,7 +370,7 @@ hist(tmp, freq=FALSE, breaks=30, xlab="ACR - outlier removed", main="",
 
 Once the central location is identified then we describe the spread using the standard deviation when the mean is used, and the interquartile range when the median is used. Similar to the mean, the standard deviation is a measure of spread focused on numerical differences in the magnitude of the observations. The standard deviation is a function of the squared deviations of each individual observation from the mean of the observations. Since it is a measure of spread around the mean, it should only be paired with the mean, and not the median. The interquartile range describes the spread of the middle fifty percent of the data when ordered from smallest to largest and is  typically paired with the median. Below, Table \@ref(tab:tbl-Demo) is one you might see in a research manuscript that describes the individuals in a study. After carefully exploring the data, the appropriate summary statistics for each variable are given.
 
-Notice, for example, that the the median, sd, and mean for SBP are similar for both men and women. In ACR, however, the sd in men is larger than that in women. The medians for both genders are also very different from their respective means. 
+Notice, for example, that the the median, sd, and mean for SBP are similar for both men and women. In ACR, however, the standard deviation in men is larger than that in women. This implies ACR values are more variable in men than in women. The medians for both genders are also much smaller than their respective means, indicating that there are a few very large values inflating the ACR mean. This matches the skewed distribution of ACR we saw earlier when talking about histograms.
 
 ```{r tbl-Demo, echo=FALSE}
 # My MkTblNew function was modified to try and better format the final
